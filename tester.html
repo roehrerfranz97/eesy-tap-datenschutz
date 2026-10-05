@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EESy Tap testen</title>
+<!-- Where the QR code on the flyer at the coffee machine leads (Franz, 2026-10-05). -->
+<style>
+:root { --bg: #FFFFFF; --ink: #122033; --muted: #56677C; --line: #D8E1EC; --soft: #EEF3F9; --accent: #0A6DB9; --on-accent: #FFFFFF; color-scheme: light }
+@media (prefers-color-scheme: dark) { :root { --bg: #0A1018; --ink: #E6EDF5; --muted: #94A3B5; --line: #243345; --soft: #131D2A; --accent: #5AA6E8; --on-accent: #06121F; color-scheme: dark } }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif }
+main { max-width: 620px; margin: 0 auto; padding: 32px 16px 56px }
+header { display: flex; align-items: center; gap: 14px; margin-bottom: 18px }
+header img { width: 56px; height: 56px; border-radius: 14px }
+h1 { font-size: 26px; line-height: 1.2; margin: 0; text-wrap: balance }
+.sub { color: var(--muted); margin: 2px 0 0 }
+.note { background: var(--soft); border-radius: 14px; padding: 14px 16px; margin: 18px 0 26px }
+ol { list-style: none; padding: 0; margin: 0; display: grid; gap: 18px; counter-reset: step }
+li { display: grid; grid-template-columns: 34px 1fr; gap: 12px; counter-increment: step }
+li::before { content: counter(step); width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: var(--on-accent);
+  display: grid; place-items: center; font-weight: 700; font-size: 15px; margin-top: 1px }
+li > div { min-width: 0 }
+h2 { font-size: 17px; margin: 0 0 2px }
+p { margin: 0 0 8px }
+.btn { display: inline-block; background: var(--accent); color: var(--on-accent); text-decoration: none; font-weight: 600;
+  padding: 10px 16px; border-radius: 12px; margin-top: 4px }
+.muted { color: var(--muted) }
+a { color: var(--accent) }
+footer { margin-top: 36px; padding-top: 12px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <img src="icon.png" alt="EESy Tap Logo">
+    <div>
+      <h1>EESy Tap testen</h1>
+      <p class="sub">Kaffee am Lehrstuhl EES mit dem Handy bezahlen</p>
+    </div>
+  </header>
+
+  <div class="note">
+    <p><strong>Vorerst nur für Android.</strong> Die App läuft als geschlossener Test bei Google Play. Dafür muss jedes Google-Konto einzeln von Franz freigeschaltet werden. Das geht in vier Schritten.</p>
+  </div>
+
+  <ol>
+    <li><div>
+      <h2>Freischaltung anfragen</h2>
+      <p>Melde dich mit dem Google-Konto an, das du im Play Store auf deinem Handy benutzt, und tippe auf <em>Beitritt zur Gruppe anfragen</em>.</p>
+      <a class="btn" href="https://groups.google.com/g/eesy-tap-tester">Freischaltung anfragen</a>
+    </div></li>
+    <li><div>
+      <h2>Auf die Bestätigung warten</h2>
+      <p>Franz schaltet dich frei. Sobald das passiert ist, bekommst du von Google eine E-Mail.</p>
+    </div></li>
+    <li><div>
+      <h2>Dem Test beitreten</h2>
+      <p>Nach der Freischaltung hier auf <em>Tester werden</em> tippen, mit demselben Google-Konto.</p>
+      <a class="btn" href="https://play.google.com/apps/testing/de.ees.kaffee.nfc">Tester werden</a>
+    </div></li>
+    <li><div>
+      <h2>App installieren und an der Betty einrichten</h2>
+      <p>App aus dem Play Store laden, öffnen und der Einrichtung folgen: Handy an die Betty halten, danach deinen Kaffee-Chip. Franz bestätigt dein Handy einmal persönlich.</p>
+      <a class="btn" href="https://play.google.com/store/apps/details?id=de.ees.kaffee.nfc">Zum Play Store</a>
+    </div></li>
+  </ol>
+
+  <footer>
+    <p>Dein Handy braucht NFC. Fragen an Franz Röhrer (FR), <a href="mailto:franz.roehrer@tum.de">franz.roehrer@tum.de</a>.</p>
+    <p><a href="./">Datenschutzerklärung</a></p>
+  </footer>
+</main>
+</body>
+</html>
