@@ -39,7 +39,10 @@ footer { margin-top: 36px; padding-top: 12px; border-top: 1px solid var(--line);
   </ul>
 
   <h2>Wohin die Daten gehen</h2>
-  <p>Die App hat keinen Internetzugriff. Daten gehen nur über NFC an die Kaffeekasse „Betty“ am Lehrstuhl und von dort in die Kaffee-Datenbank des Lehrstuhls. Es gibt keine Werbung, kein Tracking und keine Weitergabe an Dritte. Vergleiche mit dem Lehrstuhl zeigen nur Durchschnitte ohne Namen.</p>
+  <p>Die App hat keinen Internetzugriff. Daten gehen nur über NFC oder Bluetooth an die Kaffeekasse „Betty“ am Lehrstuhl und von dort in die Kaffee-Datenbank des Lehrstuhls. Es gibt keine Werbung, kein Tracking und keine Weitergabe an Dritte. Vergleiche mit dem Lehrstuhl zeigen nur Durchschnitte ohne Namen.</p>
+
+  <h2>Aufladen per Überweisung</h2>
+  <p>Wer per Überweisung auflädt, überweist auf das Konto des Kassenwarts. Die Betty liest dessen Zahlungseingänge über den Kontoinformationsdienst Enable Banking (Enable Banking Oy, Finnland) und bucht Überweisungen mit dem Verwendungszweck „EESyTap …“ auf das darin genannte Kaffeekonto. Auf diesem Konto gehen nur Kaffee-Zahlungen ein. Damit ab der zweiten Überweisung vom selben Konto kein Verwendungszweck mehr nötig ist, merkt sich die Betty die IBAN des Absenders, aber nur als Fingerabdruck mit einem geheimen Schlüssel der Betty, nicht im Klartext. Aus dem Fingerabdruck lässt sich die IBAN nicht zurückgewinnen.</p>
 
   <h2>Sicherheit</h2>
   <p>Der Schlüssel des Handys liegt im geschützten Schlüsselspeicher von Android und lässt sich nicht auslesen. Jede Übertragung an die Betty ist damit signiert.</p>

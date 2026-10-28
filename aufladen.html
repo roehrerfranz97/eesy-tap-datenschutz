@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EESy Tap aufladen</title>
+<!-- Where the QR code of the transfer flyer leads (Franz, 2026-10-28): for everyone, with or without the app.
+     The reference is the one of ueberweisung.py: "EESyTap <ID> <code> <name>", the code 4 characters of
+     SHA-256 over "EESyTap-REF-1|<ID>" (no secret, it catches typos). Reads 08:30, 11:00, 13:30, 16:00. -->
+<style>
+:root { --bg: #FFFFFF; --ink: #122033; --muted: #56677C; --line: #D8E1EC; --soft: #EEF3F9; --accent: #0A6DB9; --on-accent: #FFFFFF; --warn-bg: #E6F0FA; color-scheme: light }
+@media (prefers-color-scheme: dark) { :root { --bg: #0A1018; --ink: #E6EDF5; --muted: #94A3B5; --line: #243345; --soft: #131D2A; --accent: #5AA6E8; --on-accent: #06121F; --warn-bg: #12263A; color-scheme: dark } }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif }
+main { max-width: 620px; margin: 0 auto; padding: 32px 16px 56px }
+header { display: flex; align-items: center; gap: 14px; margin-bottom: 18px }
+header img { width: 56px; height: 56px; border-radius: 14px }
+h1 { font-size: 26px; line-height: 1.2; margin: 0; text-wrap: balance }
+h2 { font-size: 18px; margin: 28px 0 8px }
+.sub { color: var(--muted); margin: 2px 0 0 }
+.must { background: var(--warn-bg); border-left: 4px solid var(--accent); border-radius: 10px; padding: 12px 14px; margin: 16px 0; font-weight: 600 }
+.must span { color: var(--accent) }
+.times { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 }
+.times b { background: var(--soft); border-radius: 10px; padding: 6px 12px; font-variant-numeric: tabular-nums }
+label { display: block; font-size: 14px; color: var(--muted); margin: 12px 0 4px }
+input { font: inherit; width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--ink) }
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px }
+.field { background: var(--soft); border-radius: 12px; padding: 8px 12px; margin: 8px 0; display: flex; align-items: center; gap: 10px }
+.field div { flex: 1; min-width: 0 }
+.field small { display: block; color: var(--muted); font-size: 12px }
+.field code { font: 15px/1.4 ui-monospace, "Cascadia Mono", Consolas, monospace; word-break: break-all }
+.field button { font: inherit; font-size: 14px; color: var(--accent); background: none; border: 0; padding: 6px; cursor: pointer }
+#qr { background: #FFFFFF; padding: 10px; border-radius: 12px; width: max-content; max-width: 100%; margin: 12px 0 }
+#qr img, #qr svg { display: block; width: 200px; height: 200px }
+.muted { color: var(--muted) }
+ol { padding-left: 22px }
+li { margin: 4px 0 }
+a { color: var(--accent) }
+footer { margin-top: 36px; padding-top: 12px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <img src="icon.png" alt="EESy Tap Logo">
+    <div>
+      <h1>Guthaben per Überweisung aufladen</h1>
+      <p class="sub">Kaffee am Lehrstuhl EES, ohne Bargeld</p>
+    </div>
+  </header>
+
+  <ol>
+    <li>Deinen Verwendungszweck unten mit deiner ID erzeugen. <span class="muted">Mit der App: Wallet → Aufladen → Überweisung, dort steht alles schon fertig.</span></li>
+    <li>An das Kaffeekonto überweisen, am besten als <strong>Echtzeitüberweisung</strong>.</li>
+    <li>Die Betty holt die Eingänge viermal am Tag ab und schreibt den Betrag deinem Guthaben gut.</li>
+  </ol>
+
+  <div class="must"><span>Beim ersten Mal unbedingt den vollen Verwendungszweck angeben.</span> Danach ordnet die Betty Überweisungen von deinem Konto auch ohne ihn richtig zu.</div>
+
+  <h2>Wann wird gutgeschrieben?</h2>
+  <p>Die Betty ruft die Bankeingänge täglich um diese Zeiten ab:</p>
+  <div class="times"><b>08:30</b><b>11:00</b><b>13:30</b><b>16:00</b></div>
+  <p class="muted">Eine Echtzeitüberweisung ist beim nächsten Abruf da. Normale Überweisungen brauchen bis zu einem Bankarbeitstag. Bis 100 € wird direkt gebucht, darüber schaut der Kassenwart einmal drüber.</p>
+
+  <h2>Dein Verwendungszweck</h2>
+  <p class="muted">Deine ID steht auf deinem Kaffee-Chip.</p>
+  <div class="row">
+    <div><label for="id">Deine ID</label><input id="id" inputmode="numeric" autocomplete="off" placeholder="z. B. 123"></div>
+    <div><label for="amount">Betrag in €</label><input id="amount" inputmode="decimal" value="20"></div>
+  </div>
+  <label for="name">Name (optional, nur fürs Auge)</label>
+  <input id="name" autocomplete="off" placeholder="z. B. Franz R.">
+
+  <div id="out" hidden>
+    <div class="field"><div><small>Empfänger</small><code id="o-to"></code></div><button data-copy="o-to">Kopieren</button></div>
+    <div class="field"><div><small>IBAN</small><code id="o-iban"></code></div><button data-copy="o-iban">Kopieren</button></div>
+    <div class="field"><div><small>Betrag</small><code id="o-amount"></code></div><button data-copy="o-amount">Kopieren</button></div>
+    <div class="field"><div><small>Verwendungszweck</small><code id="o-ref"></code></div><button data-copy="o-ref">Kopieren</button></div>
+    <div id="qr"></div>
+    <p class="muted">GiroCode (Beta): in der Banking-App per Foto-Überweisung scannen, dann ist alles ausgefüllt. Auf dem Handy: Screenshot machen und in der Banking-App die Foto-Überweisung wählen.</p>
+  </div>
+
+  <footer>
+    <p>Fragen an Franz Röhrer (FR), <a href="mailto:franz.roehrer@tum.de">franz.roehrer@tum.de</a>.</p>
+    <p><a href="./">Datenschutzerklärung</a> · <a href="tester.html">EESy Tap testen</a></p>
+  </footer>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>
+// the account that takes only coffee money (Franz 2026-10-22)
+const TO = "Franz Röhrer", IBAN = "DE89100101780592351288";
+const ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";   // as ueberweisung.py: no 0/O, no 1/I
+
+async function code(id) {
+  const h = new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode("EESyTap-REF-1|" + id)));
+  const n = ((h[0] << 16) | (h[1] << 8) | h[2]) >> 4;
+  return [15, 10, 5, 0].map(s => ALPHABET[(n >> s) & 31]).join("");
+}
+function asciiName(s) {
+  const t = { "ä": "ae", "ö": "oe", "ü": "ue", "Ä": "Ae", "Ö": "Oe", "Ü": "Ue", "ß": "ss" };
+  s = [...(s || "")].map(c => t[c] || c).join("").normalize("NFKD").replace(/[^\x00-\x7F]/g, "");
+  return s.replace(/[^A-Za-z0-9 .\-]/g, "").replace(/\s+/g, " ").trim().slice(0, 30);
+}
+const $ = id => document.getElementById(id);
+async function update() {
+  const id = $("id").value.trim();
+  const cents = Math.round(parseFloat($("amount").value.replace(",", ".")) * 100);
+  if (!/^\d{1,6}$/.test(id) || !(cents > 0)) { $("out").hidden = true; return; }
+  const ref = ("EESyTap " + parseInt(id, 10) + " " + await code(parseInt(id, 10)) + " " + asciiName($("name").value)).trim();
+  const eur = Math.floor(cents / 100) + "," + String(cents % 100).padStart(2, "0");
+  $("o-to").textContent = TO;
+  $("o-iban").textContent = IBAN.replace(/(.{4})/g, "$1 ").trim();
+  $("o-amount").textContent = eur + " €";
+  $("o-ref").textContent = ref;
+  const giro = ["BCD", "002", "1", "SCT", "", TO, IBAN, "EUR" + eur.replace(",", "."), "", "", ref].join("\n");
+  if (window.qrcode) {
+    const q = qrcode(0, "M"); q.addData(unescape(encodeURIComponent(giro))); q.make();
+    $("qr").innerHTML = q.createSvgTag({ cellSize: 4, margin: 2 });
+  }
+  $("out").hidden = false;
+}
+["id", "amount", "name"].forEach(i => $(i).addEventListener("input", update));
+document.querySelectorAll("[data-copy]").forEach(b => b.addEventListener("click", () => {
+  let v = $(b.dataset.copy).textContent;
+  if (b.dataset.copy === "o-iban") v = IBAN;
+  if (b.dataset.copy === "o-amount") v = v.replace(" €", "");
+  navigator.clipboard.writeText(v).then(() => { b.textContent = "Kopiert"; setTimeout(() => b.textContent = "Kopieren", 1500); }, () => {});
+}));
+</script>
+</body>
+</html>
